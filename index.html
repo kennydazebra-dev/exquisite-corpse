@@ -1,201 +1,203 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Salon Co-Story</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
-      margin: 0;
-      background: #f4efe6;
-      font-family: 'Inter', sans-serif;
-      color: #111;
+      font-family: Georgia, serif;
+      background: #fdfaf6;
+      color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
     }
 
     .container {
-      max-width: 750px;
-      margin: 80px auto;
-      padding: 40px;
-      background: white;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      position: relative;
+      max-width: 650px;
+      width: 100%;
     }
 
-    .banner {
-      background: #154ea8;
-      color: white;
-      font-weight: 700;
-      font-size: 2em;
-      padding: 20px 30px;
-      display: inline-block;
-      transform: rotate(-2deg);
-      margin-bottom: 15px;
-      letter-spacing: 3px;
-    }
-
-    .subtitle {
-      margin-top: 10px;
-      margin-bottom: 40px;
-      font-size: 0.9em;
+    h1 {
+      text-align: center;
+      font-weight: normal;
       letter-spacing: 2px;
-      color: #154ea8;
-      text-transform: uppercase;
-    }
-
-    h3 {
-      text-transform: uppercase;
-      font-size: 0.8em;
-      letter-spacing: 2px;
-      color: #154ea8;
-      margin-bottom: 10px;
-    }
-
-    #previous {
-      font-family: 'Special Elite', monospace;
-      font-size: 1.2em;
-      background: #f9f6ef;
-      padding: 20px;
-      border-left: 5px solid #154ea8;
       margin-bottom: 40px;
-      min-height: 60px;
+    }
+
+    .story-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      min-height: 100px;
     }
 
     textarea {
       width: 100%;
-      height: 130px;
+      height: 140px;
       padding: 15px;
-      font-family: 'Special Elite', monospace;
-      font-size: 1em;
-      border: 2px solid #154ea8;
+      font-family: Georgia, serif;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
       resize: none;
-      background: #fffdf9;
+      outline: none;
+      transition: all 0.2s ease;
     }
 
-    textarea:focus {
-      outline: none;
-      background: #fff;
+    textarea:disabled {
+      background: #f3f3f3;
+      cursor: not-allowed;
     }
 
     button {
       margin-top: 15px;
-      padding: 12px 24px;
-      background: #154ea8;
-      border: none;
+      padding: 10px 18px;
+      font-family: Georgia, serif;
+      background: #1a1a1a;
       color: white;
-      font-weight: bold;
-      letter-spacing: 1px;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: opacity 0.2s ease;
     }
 
     button:hover {
-      background: #0f3b80;
+      opacity: 0.85;
     }
 
-    .stars {
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      font-size: 24px;
-      color: #154ea8;
-      transform: rotate(10deg);
-      opacity: 0.6;
-    }
-
-    .stars-bottom {
-      position: absolute;
-      bottom: -25px;
-      left: -15px;
-      font-size: 20px;
-      color: #154ea8;
-      transform: rotate(-15deg);
-      opacity: 0.6;
+    #counter {
+      margin-top: 8px;
+      font-size: 0.85em;
+      color: #666;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <h1>Salon Co-Story</h1>
 
-  <div class="stars">✦ ✧ ✦</div>
-  <div class="stars-bottom">✧ ✦</div>
+  <div class="story-box" id="latestText">
+    Loading...
+  </div>
 
-  <div class="banner">Salon Co-Story</div>
-  <div class="subtitle">A Collaborative Writing Experiment</div>
-
-  <h3>Previous Contribution</h3>
-  <div id="previous">Loading...</div>
-
-  <h3>Your Contribution</h3>
-<textarea id="newText" maxlength="1500" placeholder="Continue the story..."></textarea>
-
-<div id="counter" style="margin-top:8px; font-size:0.8em; color:#154ea8; letter-spacing:1px;">
-  0 words · 0 / 1500 characters
-</div>
-
-<br>
-<button id="submitBtn">Add to the Story</button>
-
+  <textarea id="newText" maxlength="1500" placeholder="Continue the story..."></textarea>
+  <div id="counter">0 words · 0 / 1500 characters</div>
+  <button onclick="submitText()">Add to the Story</button>
 </div>
 
 <script>
-const supabaseUrl = "https://oknklrirjobjxkszvuti.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmtscmlyam9ianhrc3p2dXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTY1MDIsImV4cCI6MjA4NzM3MjUwMn0.2klLdEHJykXAQUKWtlrV-SWJPS8gPQml-UWw2YnXKt4";
+  const SUPABASE_URL = "https://oknklrirjobjxkszvuti.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbmtscmlyam9ianhrc3p2dXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTY1MDIsImV4cCI6MjA4NzM3MjUwMn0.2klLdEHJykXAQUKWtlrV-SWJPS8gPQml-UWw2YnXKt4";
 
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function loadLatest() {
-  const { data, error } = await supabaseClient
-    .from("entries")
-    .select("text")
-    .order("id", { ascending: false })
-    .limit(1);
+  const textarea = document.getElementById("newText");
+  const counter = document.getElementById("counter");
 
-  if (error) {
-    console.error(error);
-    document.getElementById("previous").innerText = "Error loading story.";
-    return;
+  const LOCK_ID = 1;
+  const LOCK_DURATION = 10 * 60 * 1000; // 10 minutes
+
+  // Load latest submission
+  async function loadLatest() {
+    const { data } = await supabaseClient
+      .from("submissions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    document.getElementById("latestText").innerText =
+      data && data.length > 0
+        ? data[0].text
+        : "The story begins here...";
   }
 
-  document.getElementById("previous").innerText =
-    data && data.length ? data[0].text : "The story begins here...";
-}
+  // Word + character counter
+  textarea.addEventListener("input", async () => {
+    const text = textarea.value;
 
-async function submitText() {
-  const text = document.getElementById("newText").value;
-  if (!text.trim()) return;
+    const charCount = text.length;
+    const wordCount = text.trim() === ""
+      ? 0
+      : text.trim().split(/\s+/).length;
 
-  const { error } = await supabaseClient
-    .from("entries")
-    .insert([{ text }]);
+    counter.innerText = `${wordCount} words · ${charCount} / 1500 characters`;
 
-  if (error) {
-    console.error(error);
-    alert("Error submitting text.");
-    return;
+    // Attempt to claim lock
+    const { data } = await supabaseClient
+      .from("writing_lock")
+      .select("*")
+      .eq("id", LOCK_ID)
+      .single();
+
+    if (data && !data.is_locked) {
+      await supabaseClient
+        .from("writing_lock")
+        .update({ is_locked: true, locked_at: new Date() })
+        .eq("id", LOCK_ID);
+    }
+  });
+
+  // Check lock status
+  async function checkLock() {
+    const { data } = await supabaseClient
+      .from("writing_lock")
+      .select("*")
+      .eq("id", LOCK_ID)
+      .single();
+
+    if (!data) return;
+
+    const now = new Date();
+    const lockedAt = data.locked_at ? new Date(data.locked_at) : null;
+
+    if (data.is_locked && lockedAt) {
+      const timePassed = now - lockedAt;
+
+      if (timePassed > LOCK_DURATION) {
+        // Auto unlock
+        await supabaseClient
+          .from("writing_lock")
+          .update({ is_locked: false, locked_at: null })
+          .eq("id", LOCK_ID);
+
+        textarea.disabled = false;
+        textarea.placeholder = "Continue the story...";
+      } else {
+        textarea.disabled = true;
+        textarea.placeholder = "Another writer is currently composing...";
+      }
+    } else {
+      textarea.disabled = false;
+      textarea.placeholder = "Continue the story...";
+    }
   }
 
-  document.getElementById("newText").value = "";
+  // Submit text
+  async function submitText() {
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    await supabaseClient.from("submissions").insert([{ text }]);
+
+    await supabaseClient
+      .from("writing_lock")
+      .update({ is_locked: false, locked_at: null })
+      .eq("id", LOCK_ID);
+
+    textarea.value = "";
+    counter.innerText = "0 words · 0 / 1500 characters";
+
+    loadLatest();
+  }
+
+  setInterval(checkLock, 3000);
+  checkLock();
   loadLatest();
-}
-
-document.getElementById("submitBtn").addEventListener("click", submitText);
-const textarea = document.getElementById("newText");
-const counter = document.getElementById("counter");
-
-textarea.addEventListener("input", () => {
-  const text = textarea.value;
-
-  const charCount = text.length;
-  const wordCount = text.trim() === "" 
-    ? 0 
-    : text.trim().split(/\s+/).length;
-
-  counter.innerText = `${wordCount} words · ${charCount} / 1500 characters`;
-});
-loadLatest();
 </script>
 
 </body>
