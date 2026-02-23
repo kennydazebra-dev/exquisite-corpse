@@ -129,9 +129,14 @@
   <div id="previous">Loading...</div>
 
   <h3>Your Contribution</h3>
-  <textarea id="newText" maxlength="1500" placeholder="Continue the story..."></textarea>
-  <br>
-  <button id="submitBtn">Add to the Story</button>
+<textarea id="newText" maxlength="1200" placeholder="Continue the story..."></textarea>
+
+<div id="counter" style="margin-top:8px; font-size:0.8em; color:#154ea8; letter-spacing:1px;">
+  0 words · 0 / 1200 characters
+</div>
+
+<br>
+<button id="submitBtn">Add to the Story</button>
 
 </div>
 
@@ -177,7 +182,19 @@ async function submitText() {
 }
 
 document.getElementById("submitBtn").addEventListener("click", submitText);
+const textarea = document.getElementById("newText");
+const counter = document.getElementById("counter");
 
+textarea.addEventListener("input", () => {
+  const text = textarea.value;
+
+  const charCount = text.length;
+  const wordCount = text.trim() === "" 
+    ? 0 
+    : text.trim().split(/\s+/).length;
+
+  counter.innerText = `${wordCount} words · ${charCount} / 1200 characters`;
+});
 loadLatest();
 </script>
 
