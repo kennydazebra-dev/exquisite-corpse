@@ -129,10 +129,10 @@
   <div id="previous">Loading...</div>
 
   <h3>Your Contribution</h3>
-<textarea id="newText" maxlength="1200" placeholder="Continue the story..."></textarea>
+<textarea id="newText" maxlength="1500" placeholder="Continue the story..."></textarea>
 
 <div id="counter" style="margin-top:8px; font-size:0.8em; color:#154ea8; letter-spacing:1px;">
-  0 words · 0 / 1200 characters
+  0 words · 0 / 1500 characters
 </div>
 
 <br>
@@ -193,7 +193,7 @@ textarea.addEventListener("input", () => {
     ? 0 
     : text.trim().split(/\s+/).length;
 
-  counter.innerText = `${wordCount} words · ${charCount} / 1200 characters`;
+  counter.innerText = `${wordCount} words · ${charCount} / 1500 characters`;
 });
 loadLatest();
 </script>
